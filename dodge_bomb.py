@@ -35,9 +35,8 @@ def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("fig/pg_bg.jpg")
-    kk_img_dict = make_kk_img_dict()
-    print(kk_img_dict)
-    kk_img: pg.Surface = kk_img_dict[(5, 0)]
+    kk_img_dict = make_kk_img_dict() #  こうかとんの画像辞書を作成
+    kk_img: pg.Surface = kk_img_dict[(5, 0)] #  右向きのこうかとんを初期画像に設定
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
     bb_accs_lst, bb_img_lst = make_bomb_list() #  タプルを展開
@@ -80,7 +79,7 @@ def main():
         if not check_res[1]:
             bb_vy *= -1
 
-        screen.blit(kk_img_dict[tuple(sum_mv)], kk_rct)
+        screen.blit(kk_img_dict[tuple(sum_mv)], kk_rct) #  移動量をキーとして辞書から描画画像を選択
         screen.blit(bb_img, bb_rct)
         pg.display.update()
         tmr += 1
@@ -131,7 +130,14 @@ def make_bomb_list() -> tuple[list, list]:
 
 
 def make_kk_img_dict():
-    kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
+    """
+    引数: なし
+    戻り値: 移動量のタプルをキーとした、こうかとん画像の辞書
+    押下キーに対する移動量の合計値タプルをキーとした、こうかとんの回転画像の辞書を作成する関数
+    """
+    kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9) #  こうかとんの画像をロード
+
+    #左右への移動量が0の場合、左の場合、右の場合に分けて辞書を作成
     kk_img_dict: dict = {
         (i * 5, j * 5): pg.transform.flip(pg.transform.rotozoom(kk_img, 90 * j, 1), True, False) if i == 0 \
         else pg.transform.flip(pg.transform.rotozoom(kk_img, 45 * j, 1), True, False) if i >= 0 \
