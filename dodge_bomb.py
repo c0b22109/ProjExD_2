@@ -149,6 +149,7 @@ def make_kk_img_dict() -> dict[tuple[int, int]: pg.Surface]:
 
     return kk_img_dict
 
+
 def chase_bomb(kk_rct: pg.Rect, bb_rct: pg.Rect, vx: float, vy: float) -> tuple[float, float]:
     """
     引数: こうかとんのRect, 爆弾のRect, 直前の爆弾の横方向移動量, 直前の爆弾の縦方向移動量
