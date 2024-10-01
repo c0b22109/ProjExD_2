@@ -1,5 +1,6 @@
 import os
 import sys
+import math
 import random
 import time
 import pygame as pg
@@ -50,6 +51,8 @@ def main():
     while True:
         bb_acc = bb_accs_lst[min(tmr // 500, 9)] #  タイマー500カウントごとに加速度を変更
         bb_img = bb_img_lst[min(tmr // 500, 9)] #  タイマー500カウントごとに爆弾のサイズを変更
+
+        bb_vx, bb_vy = chase_bomb(kk_rct, bb_rct, bb_vx, bb_vy) #  こうかとんと爆弾の中心座標から爆弾の移動量を計算
 
         for event in pg.event.get():
             if event.type == pg.QUIT: 
@@ -129,7 +132,7 @@ def make_bomb_list() -> tuple[list, list]:
     return (accs, bomb_Surface) #  タプルを返却
 
 
-def make_kk_img_dict():
+def make_kk_img_dict() -> dict[tuple[int, int]: pg.Surface]:
     """
     引数: なし
     戻り値: 移動量のタプルをキーとした、こうかとん画像の辞書
@@ -145,6 +148,22 @@ def make_kk_img_dict():
     }   #移動量の合計値をキーとするこうかとんの画像Surfaceの辞書を作成
 
     return kk_img_dict
+
+def chase_bomb(kk_rct: pg.Rect, bb_rct: pg.Rect, vx: float, vy: float) -> tuple[float, float]:
+    """
+    引数: こうかとんのRect, 爆弾のRect, 直前の爆弾の横方向移動量, 直前の爆弾の縦方向移動量
+    戻り値: 爆弾の縦方向移動量と横方向移動量のタプル
+    こうかとんを追跡する爆弾の移動量を算出する関数
+    """
+    dist_x = kk_rct.center[0] - bb_rct.center[0] #  こうかとんと爆弾の横方向の距離を算出
+    dist_y = kk_rct.center[1] - bb_rct.center[1] #  こうかとんと爆弾の縦方向の距離を算出
+    origin_norm = abs(math.sqrt(math.pow(dist_x, 2) + math.pow(dist_y, 2))) #  ベクトルのノルムを算出
+
+    if origin_norm < 300: #  ノルムが300未満の場合、直前の移動を継続
+        return (vx, vy)
+    
+    norm_mag = math.sqrt(50) / origin_norm #  ノルムが√50となる倍率を計算
+    return (dist_x * norm_mag, dist_y * norm_mag) #  倍率をかけて返却
 
 
 if __name__ == "__main__":
