@@ -34,8 +34,10 @@ def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
-    bg_img = pg.image.load("fig/pg_bg.jpg")    
-    kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
+    bg_img = pg.image.load("fig/pg_bg.jpg")
+    kk_img_dict = make_kk_img_dict()
+    print(kk_img_dict)
+    kk_img: pg.Surface = kk_img_dict[(5, 0)]
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
     bb_accs_lst, bb_img_lst = make_bomb_list() #  タプルを展開
@@ -78,7 +80,7 @@ def main():
         if not check_res[1]:
             bb_vy *= -1
 
-        screen.blit(kk_img, kk_rct)
+        screen.blit(kk_img_dict[tuple(sum_mv)], kk_rct)
         screen.blit(bb_img, bb_rct)
         pg.display.update()
         tmr += 1
@@ -126,6 +128,17 @@ def make_bomb_list() -> tuple[list, list]:
         bomb_Surface.append(bb_img) #  リストに追加
 
     return (accs, bomb_Surface) #  タプルを返却
+
+
+def make_kk_img_dict():
+    kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
+    kk_img_dict: dict = {
+        (i * 5, j * 5): pg.transform.flip(pg.transform.rotozoom(kk_img, 90 * j, 1), True, False) if i == 0 \
+        else pg.transform.flip(pg.transform.rotozoom(kk_img, 45 * j, 1), True, False) if i >= 0 \
+        else pg.transform.rotozoom(kk_img, 45 * j, 1) for i in range(-1, 2) for j in range(-1, 2)
+    }   #移動量の合計値をキーとするこうかとんの画像Surfaceの辞書を作成
+
+    return kk_img_dict
 
 
 if __name__ == "__main__":
