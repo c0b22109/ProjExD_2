@@ -38,9 +38,8 @@ def main():
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
-    bb_img = pg.Surface((20, 20))
-    pg.draw.circle(bb_img, (255, 0, 0), (bb_img.get_width() / 2, bb_img.get_height() / 2), 10)
-    bb_img.set_colorkey((0, 0, 0))
+    bb_accs_lst, bb_img_lst = make_bomb_list() #  タプルを展開
+    bb_img: pg.Surface = bb_img_lst[0] #  最初の爆弾で初期化
     bb_rct = bb_img.get_rect()
     bb_rct.center = (random.randint(0, WIDTH), random.randint(0, HEIGHT))
     bb_vx = 5
@@ -48,6 +47,9 @@ def main():
     clock = pg.time.Clock()
     tmr = 0
     while True:
+        bb_acc = bb_accs_lst[min(tmr // 500, 9)] #  タイマー500カウントごとに加速度を変更
+        bb_img = bb_img_lst[min(tmr // 500, 9)] #  タイマー500カウントごとに爆弾のサイズを変更
+
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
@@ -65,7 +67,7 @@ def main():
                 sum_mv[1] += tpl[1][1]
 
         kk_rct.move_ip(sum_mv)
-        bb_rct.move_ip(bb_vx, bb_vy)
+        bb_rct.move_ip(bb_vx * bb_acc, bb_vy * bb_acc) #  加速度を含んだ移動量で移動
 
         if check_bound(kk_rct) != (True, True):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
@@ -107,6 +109,23 @@ def draw_gameover(screen: pg.Surface):
     pg.display.update() #  画面を更新
     time.sleep(5) #  5秒待機
     return
+
+
+def make_bomb_list() -> tuple[list, list]:
+    """
+    引数: なし
+    戻り値: 加速度のリストと爆弾Surfaceのリストのタプル
+    加速度リストとサイズの違う爆弾Surfaceのリストを作成する関数
+    """
+    accs = [a for a in range(1, 11)] #  加速度のリストを作成
+    bomb_Surface = []
+    for r in range(1, 11): #  爆弾を10種類作成
+        bb_img = pg.Surface((20 * r, 20 * r))
+        pg.draw.circle(bb_img, (255, 0, 0), (bb_img.get_width() / 2, bb_img.get_height() / 2), 10 * r)
+        bb_img.set_colorkey((0, 0, 0))
+        bomb_Surface.append(bb_img) #  リストに追加
+
+    return (accs, bomb_Surface) #  タプルを返却
 
 
 if __name__ == "__main__":
