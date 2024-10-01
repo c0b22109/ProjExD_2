@@ -38,6 +38,7 @@ def main():
     bg_img = pg.image.load("fig/pg_bg.jpg")
     kk_img_dict = make_kk_img_dict() #  こうかとんの画像辞書を作成
     kk_img: pg.Surface = kk_img_dict[(5, 0)] #  右向きのこうかとんを初期画像に設定
+
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
     bb_accs_lst, bb_img_lst = make_bomb_list() #  タプルを展開
