@@ -1,6 +1,7 @@
 import os
 import sys
 import random
+import time
 import pygame as pg
 
 
@@ -53,6 +54,7 @@ def main():
         screen.blit(bg_img, [0, 0])
 
         if kk_rct.colliderect(bb_rct):
+            draw_gameover(screen)
             return
 
         key_lst = pg.key.get_pressed()
@@ -79,6 +81,32 @@ def main():
         pg.display.update()
         tmr += 1
         clock.tick(50)
+
+
+def draw_gameover(screen: pg.Surface):
+    """
+    引数: 描画するスクリーン
+    戻り値: なし
+    ゲームオーバー画面を描画する関数
+    """
+    fnt = pg.font.Font(None, 100) #  フォントサイズを100に設定
+
+    black_out = pg.Surface((WIDTH, HEIGHT)) #  ブラックアウトSurfaceを生成
+    pg.draw.rect(black_out, (0, 0, 0), (0, 0, WIDTH, HEIGHT)) #  画面サイズと同じ四角形を生成
+    black_out.set_alpha(128) #  透過度を50%に設定
+
+    txt = fnt.render("Game Over", True, (255, 255, 255)) #  "Game Over"テキストのSurfaceを生成
+    txt_and_center_diff = txt.get_width() / 2 #  画面の中心座標とテキストの端の座標のずれを計算
+
+    kk_img_cry = pg.image.load("fig/8.png") #  ないているこうかとんの画像Surfaceを生成
+
+    screen.blit(black_out, (0, 0)) #  ブラックアウトを描画
+    screen.blit(txt, (WIDTH / 2 - txt_and_center_diff, HEIGHT / 2 - txt.get_height() / 2)) #  画面の中心にテキストが来るよう、描画
+    screen.blit(kk_img_cry, (WIDTH / 2 - txt_and_center_diff - kk_img_cry.get_width() - 10, HEIGHT / 2 - kk_img_cry.get_height() / 2)) #  テキストの右端-10pxにこうかとんの画像を描画
+    screen.blit(kk_img_cry, (WIDTH / 2 + txt_and_center_diff + 10, HEIGHT / 2 - kk_img_cry.get_height() / 2)) #  テキストの左端+10pxにこうかとんの画像を描画
+    pg.display.update() #  画面を更新
+    time.sleep(5) #  5秒待機
+    return
 
 
 if __name__ == "__main__":
