@@ -3,6 +3,7 @@ import sys
 import pygame as pg
 import random
 import time
+import math
 
 
 WIDTH, HEIGHT = 1100, 650
@@ -47,6 +48,8 @@ def main():
                 sum_mv[0] += move[0]
                 sum_mv[1] += move[1]
 
+
+        (vx, vy) = calc_orientation(bb_rct, kk_rct, (vx, vy))
 
         bb_rct.move_ip(vx * bb_accs[min(tmr // 500, 9)], vy * bb_accs[min(tmr // 500, 10)])
         bb_img = bb_img_lst[min(tmr // 500, 9)]
@@ -178,6 +181,18 @@ def get_kk_imgs() -> dict[tuple[int, int], pg.Surface]:
     #kk_dict[(5, 0)] = pg.transform.rotozoom(pg.transform.flip(kk_img, True, False), 0, 0.9)
 
     return kk_dict
+
+
+def calc_orientation(org: pg.Rect, dst: pg.Rect, current_xy: tuple[float, float]) -> tuple[float, float]:
+    vector_x = dst.centerx - org.centerx
+    vector_y = dst.centery - org.centery
+    norm = math.sqrt(pow(vector_x, 2) + pow(vector_y, 2))
+
+    if norm >= 300:
+        power = math.sqrt(25) / norm
+        return (vector_x * power, vector_y * power)
+    else:
+        return current_xy
 
 
 if __name__ == "__main__":
