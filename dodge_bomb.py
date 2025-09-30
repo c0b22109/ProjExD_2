@@ -12,7 +12,8 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
-    bg_img = pg.image.load("fig/pg_bg.jpg")    
+    bg_img = pg.image.load("fig/pg_bg.jpg")
+    kk_imgs = get_kk_imgs()
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
@@ -67,6 +68,8 @@ def main():
                 bb_rct.bottom = HEIGHT
         screen.blit(bb_img, bb_rct)
 
+        if sum_mv != [0, 0]:
+            kk_img = kk_imgs[tuple(sum_mv)]
         kk_rct.move_ip(sum_mv)
         if check_bound(kk_rct) != ((True, True), (True, True)):
             kk_rct.move_ip((-sum_mv[0], -sum_mv[1]))
@@ -156,6 +159,25 @@ def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
         bb_img_lst.append(bb_img)
 
     return (bb_img_lst, [a for a in range(1, 11)])
+
+
+def get_kk_imgs() -> dict[tuple[int, int], pg.Surface]:
+    """
+    移動量をキーとするこうかとんの画像Surfaceのdictを作成する関数
+
+    引数
+    なし
+
+    戻り値
+    dict[tuple[int, int], pg.Surface]: dict[tuple[横方向の移動量 int, 縦方向の移動量 int], 向きの異なるこうかとんの画像 pg.Surface]
+    """
+    kk_img = pg.image.load("fig/3.png")
+    kk_dict = {(i * 5, j * 5): pg.transform.rotozoom(kk_img, j * 45, 0.9) \
+        if i < 0 else pg.transform.rotozoom(pg.transform.flip(kk_img, True, False), j * -90 - 45 * i * -j, 0.9) \
+        for i in range(-1, 2) for j in range(-1, 2) if not(i == 0 and j == 0)}
+    #kk_dict[(5, 0)] = pg.transform.rotozoom(pg.transform.flip(kk_img, True, False), 0, 0.9)
+
+    return kk_dict
 
 
 if __name__ == "__main__":
