@@ -2,6 +2,7 @@ import os
 import sys
 import pygame as pg
 import random
+import time
 
 
 WIDTH, HEIGHT = 1100, 650
@@ -60,6 +61,7 @@ def main():
         pg.display.update()
 
         if kk_rct.colliderect(bb_rct):
+            gameover(screen)
             return 0
 
         tmr += 1
@@ -67,6 +69,15 @@ def main():
 
 
 def check_bound(rct: pg.rect) -> tuple:
+    """
+    画面内外判定を行う関数
+
+    引数 
+    rct pg.rect: 判定を行うrect
+
+    戻り値
+    tuple tuple(bool, bool): 横縦の判定結果タプル
+    """
     global WIDTH, HEIGHT
     in_window = [True, True]
     if rct.left < 0 or rct.right > WIDTH:
@@ -75,6 +86,34 @@ def check_bound(rct: pg.rect) -> tuple:
         in_window[1] = False
 
     return tuple(in_window)
+
+
+def gameover(screen: pg.Surface) -> None:
+    """
+    ゲームオーバー画面の描画を行う
+    """
+    global WIDTH, HEIGHT
+
+    black_out_sf = pg.Surface((WIDTH, HEIGHT))
+    black_out_sf.set_alpha(192)
+    
+    font_obj = pg.font.Font(None, 50)
+    txt = font_obj.render("Game Over", True, (255, 255, 255))
+    txt_pos_x = black_out_sf.get_width() / 2 - txt.get_width() / 2
+    txt_pos_y = black_out_sf.get_height() / 2 - txt.get_height() / 2
+
+    black_out_sf.blit(txt, (txt_pos_x, txt_pos_y))
+    
+    kk_img = pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 0.9)
+    kk_img_pos_y = black_out_sf.get_height() / 2 - kk_img.get_height() / 2
+    black_out_sf.blit(kk_img, (txt_pos_x - kk_img.get_width() - 10, kk_img_pos_y))
+    black_out_sf.blit(kk_img, (black_out_sf.get_width() - txt_pos_x + 10, kk_img_pos_y))
+
+    screen.blit(black_out_sf, (0, 0))
+    pg.display.update()
+    time.sleep(5)
+    
+
 
 
 if __name__ == "__main__":
