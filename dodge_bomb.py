@@ -36,7 +36,6 @@ def main():
             if event.type == pg.QUIT: 
                 return
         screen.blit(bg_img, [0, 0]) 
-        screen.blit(bb_img, bb_rct)
 
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
@@ -51,13 +50,18 @@ def main():
             vx *= -1
         if not bb_bound[1]:
             vy *= -1
+        screen.blit(bb_img, bb_rct)
 
         kk_rct.move_ip(sum_mv)
         if check_bound(kk_rct) != (True, True):
             kk_rct.move_ip((-sum_mv[0], -sum_mv[1]))
-
         screen.blit(kk_img, kk_rct)
+
         pg.display.update()
+
+        if kk_rct.colliderect(bb_rct):
+            return 0
+
         tmr += 1
         clock.tick(50)
 
