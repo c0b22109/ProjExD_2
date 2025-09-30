@@ -184,6 +184,17 @@ def get_kk_imgs() -> dict[tuple[int, int], pg.Surface]:
 
 
 def calc_orientation(org: pg.Rect, dst: pg.Rect, current_xy: tuple[float, float]) -> tuple[float, float]:
+    """
+    追従爆弾の移動方向を計算する関数
+
+    引数
+    org pg.Rect: 爆弾のrect
+    dst pg.Rect: こうかとんのrect
+    current_xy tuple[float, float]: 計算前の爆弾の移動方向
+    
+    戻り値
+    tuple[float, float]: tuple[爆弾の横移動方向 float, 爆弾の縦移動方向 float]
+    """
     vector_x = dst.centerx - org.centerx
     vector_y = dst.centery - org.centery
     norm = math.sqrt(pow(vector_x, 2) + pow(vector_y, 2))
