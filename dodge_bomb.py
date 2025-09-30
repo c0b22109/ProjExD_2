@@ -90,7 +90,13 @@ def check_bound(rct: pg.rect) -> tuple:
 
 def gameover(screen: pg.Surface) -> None:
     """
-    ゲームオーバー画面の描画を行う
+    ゲームオーバー画面の描画を行う関数
+
+    引数
+    screen pg.Surface:  ゲームオーバー画面を描画するスクリーン
+
+    戻り値
+    なし
     """
     global WIDTH, HEIGHT
 
