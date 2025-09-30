@@ -48,7 +48,6 @@ def main():
                 sum_mv[0] += move[0]
                 sum_mv[1] += move[1]
 
-
         (vx, vy) = calc_orientation(bb_rct, kk_rct, (vx, vy))
 
         bb_rct.move_ip(vx * bb_accs[min(tmr // 500, 9)], vy * bb_accs[min(tmr // 500, 10)])
@@ -125,6 +124,7 @@ def gameover(screen: pg.Surface) -> None:
     global WIDTH, HEIGHT
 
     black_out_sf = pg.Surface((WIDTH, HEIGHT))
+    black_out_sf.fill((0, 0, 0))
     black_out_sf.set_alpha(192)
     
     font_obj = pg.font.Font(None, 50)
