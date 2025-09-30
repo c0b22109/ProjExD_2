@@ -32,6 +32,7 @@ def main():
         pg.K_RIGHT: (5, 0)
     }
 
+    (bb_img_lst, bb_accs) = init_bb_imgs()
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
@@ -45,16 +46,29 @@ def main():
                 sum_mv[0] += move[0]
                 sum_mv[1] += move[1]
 
-        bb_rct.move_ip(vx, vy)
+
+        bb_rct.move_ip(vx * bb_accs[min(tmr // 500, 9)], vy * bb_accs[min(tmr // 500, 10)])
+        bb_img = bb_img_lst[min(tmr // 500, 9)]
+        tmp_bb_center = bb_rct.center
+        bb_rct = bb_img.get_rect()
+        bb_rct.center = tmp_bb_center
         bb_bound = check_bound(bb_rct)
-        if not bb_bound[0]:
+        if not bb_bound[0][0] or not bb_bound[0][1]:
             vx *= -1
-        if not bb_bound[1]:
+            if not bb_bound[0][0]:
+                bb_rct.left = 0
+            else:
+                bb_rct.right = WIDTH
+        if not bb_bound[1][0] or not bb_bound[1][1]:
             vy *= -1
+            if not bb_bound[1][0]:
+                bb_rct.top = 0
+            else:
+                bb_rct.bottom = HEIGHT
         screen.blit(bb_img, bb_rct)
 
         kk_rct.move_ip(sum_mv)
-        if check_bound(kk_rct) != (True, True):
+        if check_bound(kk_rct) != ((True, True), (True, True)):
             kk_rct.move_ip((-sum_mv[0], -sum_mv[1]))
         screen.blit(kk_img, kk_rct)
 
@@ -68,7 +82,7 @@ def main():
         clock.tick(50)
 
 
-def check_bound(rct: pg.rect) -> tuple:
+def check_bound(rct: pg.rect) -> tuple[tuple[bool, bool], tuple[bool, bool]]:
     """
     画面内外判定を行う関数
 
@@ -76,16 +90,20 @@ def check_bound(rct: pg.rect) -> tuple:
     rct pg.rect: 判定を行うrect
 
     戻り値
-    tuple tuple(bool, bool): 横縦の判定結果タプル
+    tuple[tuple[bool, bool], tuple[bool, bool]]: 判定結果のtuple
     """
     global WIDTH, HEIGHT
-    in_window = [True, True]
-    if rct.left < 0 or rct.right > WIDTH:
-        in_window[0] = False
-    if rct.top < 0 or rct.bottom > HEIGHT:
-        in_window[1] = False
+    in_window = [[True, True], [True, True]]
+    if rct.left < 0:
+        in_window[0][0] = False
+    if rct.right > WIDTH:
+        in_window[0][1] = False
+    if rct.top < 0:
+        in_window[1][0] = False
+    if rct.bottom > HEIGHT:
+        in_window[1][1] = False
 
-    return tuple(in_window)
+    return (tuple(in_window[0]), tuple(in_window[1]))
 
 
 def gameover(screen: pg.Surface) -> None:
@@ -120,6 +138,15 @@ def gameover(screen: pg.Surface) -> None:
     time.sleep(5)
     
 
+def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    bb_img_lst = []
+    for r in range(1, 11):
+        bb_img = pg.Surface((20 * r, 20 * r))
+        pg.draw.circle(bb_img, (255, 0, 0), (10 * r, 10 * r), 10 * r)
+        bb_img.set_colorkey((0, 0, 0))
+        bb_img_lst.append(bb_img)
+
+    return (bb_img_lst, [a for a in range(1, 11)])
 
 
 if __name__ == "__main__":
