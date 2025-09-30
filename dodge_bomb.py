@@ -46,11 +46,31 @@ def main():
                 sum_mv[1] += move[1]
 
         bb_rct.move_ip(vx, vy)
+        bb_bound = check_bound(bb_rct)
+        if not bb_bound[0]:
+            vx *= -1
+        if not bb_bound[1]:
+            vy *= -1
+
         kk_rct.move_ip(sum_mv)
+        if check_bound(kk_rct) != (True, True):
+            kk_rct.move_ip((-sum_mv[0], -sum_mv[1]))
+
         screen.blit(kk_img, kk_rct)
         pg.display.update()
         tmr += 1
         clock.tick(50)
+
+
+def check_bound(rct: pg.rect) -> tuple:
+    global WIDTH, HEIGHT
+    in_window = [True, True]
+    if rct.left < 0 or rct.right > WIDTH:
+        in_window[0] = False
+    if rct.top < 0 or rct.bottom > HEIGHT:
+        in_window[1] = False
+
+    return tuple(in_window)
 
 
 if __name__ == "__main__":
