@@ -90,7 +90,7 @@ def check_bound(rct: pg.rect) -> tuple[tuple[bool, bool], tuple[bool, bool]]:
     rct pg.rect: 判定を行うrect
 
     戻り値
-    tuple[tuple[bool, bool], tuple[bool, bool]]: 判定結果のtuple
+    tuple[tuple[bool, bool], tuple[bool, bool]]: tuple[tuple[左の判定 bool, 右の判定 bool], tuple[上の判定bool, 下の判定 bool]]
     """
     global WIDTH, HEIGHT
     in_window = [[True, True], [True, True]]
@@ -139,6 +139,15 @@ def gameover(screen: pg.Surface) -> None:
     
 
 def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    """
+    爆弾のsurfaceと速度倍率のlistを含むtupleを作成する関数
+
+    引数
+    なし
+
+    戻り値
+    tuple[list[pg.Surface], list[int]]: tuple[list[異なるサイズの爆弾 pg.Surface], list[爆弾の速度倍率 int]]
+    """
     bb_img_lst = []
     for r in range(1, 11):
         bb_img = pg.Surface((20 * r, 20 * r))
